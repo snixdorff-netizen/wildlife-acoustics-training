@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+*.log
+.env
+.verify-scratch/
+public/index.html
+public/js/wat-core.js

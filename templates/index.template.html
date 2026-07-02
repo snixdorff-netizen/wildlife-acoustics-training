@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Wildlife Acoustics Academy Training Companion — interactive bioacoustics education for wildlife professionals."
+    />
+    <title>Wildlife Acoustics Academy — Training Companion</title>
+    <style>
+/* INLINE_STYLES */
+    </style>
+  </head>
+  <body>
+    <div id="build-required-notice" class="build-required-notice" hidden>
+      <h1>Build required</h1>
+      <p>
+        You opened the <strong>source template</strong>, not the browser app. Run <code>npm run build</code> in the
+        project root, then open <code>public/index.html</code>.
+      </p>
+    </div>
+    <div id="file-protocol-banner" class="file-protocol-banner view-hidden" role="alert"></div>
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">🎙</div>
+          <div>
+            <h1>Wildlife Acoustics</h1>
+            <p class="subtitle">Academy Training Companion</p>
+          </div>
+        </div>
+        <p class="tagline">
+          Interactive training for wildlife professionals — study bioacoustics fundamentals, Song Meter deployment,
+          Kaleidoscope analysis, and species-specific workflows aligned with
+          <strong>Wildlife Acoustics Academy</strong> programs.
+        </p>
+        <nav class="top-nav" aria-label="Main navigation">
+          <button type="button" data-nav="catalog" class="active">Course Catalog</button>
+          <button type="button" data-nav="progress">My Progress</button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="app-main">
+      <section id="view-catalog">
+        <div class="hero-card">
+          <h2>On-Demand Learning for Wildlife Professionals</h2>
+          <p>
+            We know field season can be busy and unpredictable. Use this companion to study Academy-aligned modules at
+            your own pace — complete lessons, pass knowledge checks, and track your progress toward certificate-ready
+            skills.
+          </p>
+          <div class="progress-overview">
+            <div class="progress-stat">
+              <div class="value" id="overall-percent">0%</div>
+              <div class="label">Overall Progress</div>
+            </div>
+            <div class="progress-stat">
+              <div class="value"><span id="completed-modules">0</span>/<span id="total-modules">0</span></div>
+              <div class="label">Modules Complete</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-bar" id="level-filter" aria-label="Filter by level"></div>
+        <div class="track-grid" id="track-grid"></div>
+      </section>
+
+      <section id="view-module" class="view-hidden">
+        <div id="module-content"></div>
+      </section>
+
+      <section id="view-progress" class="view-hidden">
+        <div id="progress-detail"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Wildlife Acoustics — Leading provider of bioacoustics monitoring technology for biologists, researchers, and
+        government agencies worldwide.
+      </p>
+      <p>
+        Official training &amp; certificates:
+        <a href="https://training.wildlifeacoustics.com/" target="_blank" rel="noopener">Wildlife Acoustics Academy</a>
+        ·
+        <a href="https://www.wildlifeacoustics.com/resources/training-courses" target="_blank" rel="noopener"
+          >Training Resources</a
+        >
+      </p>
+      <p><small>Companion app — not affiliated with live LMS enrollment or certificate issuance.</small></p>
+    </footer>
+
+    <script>
+      (function () {
+        var styleEl = document.querySelector('style');
+        if (styleEl && styleEl.textContent.indexOf('INLINE_STYLES') !== -1) {
+          var notice = document.getElementById('build-required-notice');
+          if (notice) notice.hidden = false;
+          ['header.site-header', '#app-main', 'footer.site-footer'].forEach(function (sel) {
+            var el = document.querySelector(sel);
+            if (el) el.hidden = true;
+          });
+        }
+      })();
+    </script>
+    <script src="js/wat-core.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

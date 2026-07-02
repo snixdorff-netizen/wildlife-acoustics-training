@@ -1,0 +1,16 @@
+{
+  "name": "wildlife-acoustics-training",
+  "version": "1.0.3",
+  "description": "Interactive training companion for Wildlife Acoustics Academy programs",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "pretest": "npm run build",
+    "test": "node --test tests/*.test.js",
+    "verify": "node scripts/verify.js"
+  },
+  "private": true,
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "playwright": "^1.61.1"
+  }
+}
