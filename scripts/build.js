@@ -23,6 +23,7 @@ function wrapModule(id, source, requireIds) {
   const body = source
     .replace(/^'use strict';\s*/m, '')
     .replace(/require\(['"]\.\/curriculum-data['"]\)/g, "require('curriculum-data')")
+    .replace(/require\(['"]\.\/curriculum['"]\)/g, "require('curriculum')")
     .replace(/module\.exports\s*=\s*/, 'return ');
 
   return `
@@ -38,6 +39,10 @@ function bundleWatCore() {
     curriculum: { src: readSrc('curriculum.js'), deps: ['curriculum-data'] },
     quiz: { src: readSrc('quiz.js'), deps: [] },
     progress: { src: readSrc('progress.js'), deps: ['curriculum-data'] },
+    'field-reference': { src: readSrc('field-reference.js'), deps: [] },
+    search: { src: readSrc('search.js'), deps: ['curriculum'] },
+    'study-paths': { src: readSrc('study-paths.js'), deps: ['curriculum'] },
+    remediation: { src: readSrc('remediation.js'), deps: ['curriculum-data'] },
   };
 
   const moduleBlocks = Object.entries(files)
@@ -68,18 +73,28 @@ function bundleWatCore() {
   const curriculum = require('curriculum');
   const quiz = require('quiz');
   const progress = require('progress');
+  const fieldReference = require('field-reference');
+  const search = require('search');
+  const studyPaths = require('study-paths');
+  const remediation = require('remediation');
 
-  global.WAT = Object.assign({}, curriculum, quiz, progress);
+  global.WAT = Object.assign({}, curriculum, quiz, progress, fieldReference, search, studyPaths, remediation);
 })(typeof window !== 'undefined' ? window : globalThis);
 `;
 
   fs.writeFileSync(watCorePath, bundle);
 
-  const curriculum = require(path.join(root, 'src', 'curriculum'));
-  const quiz = require(path.join(root, 'src', 'quiz'));
-  const progress = require(path.join(root, 'src', 'progress'));
-  const merged = Object.assign({}, curriculum, quiz, progress);
-  if (!merged.getTracks || !merged.gradeKnowledgeCheck || !merged.STORAGE_KEY) {
+  const merged = Object.assign(
+    {},
+    require(path.join(root, 'src', 'curriculum')),
+    require(path.join(root, 'src', 'quiz')),
+    require(path.join(root, 'src', 'progress')),
+    require(path.join(root, 'src', 'field-reference')),
+    require(path.join(root, 'src', 'search')),
+    require(path.join(root, 'src', 'study-paths')),
+    require(path.join(root, 'src', 'remediation'))
+  );
+  if (!merged.getTracks || !merged.searchCurriculum || !merged.getRemediationQueue) {
     throw new Error('Source modules missing expected exports');
   }
 

@@ -1,4 +1,4 @@
-/* Wildlife Acoustics Training Companion — UI (v1.0.3) */
+/* Wildlife Acoustics Training Companion — UI (v1.1.0) */
 (function () {
   'use strict';
 
@@ -15,7 +15,6 @@
 
   function detectFileProtocolIssues() {
     if (location.protocol !== 'file:') return false;
-
     const header = document.querySelector('header.site-header');
     if (header) {
       const bg = window.getComputedStyle(header).backgroundImage;
@@ -33,11 +32,8 @@
     if (location.protocol === 'file:') {
       showFileProtocolBanner('<code>js/wat-core.js</code> did not load. Keep the <code>public/</code> folder intact.');
       const main = document.getElementById('app-main');
-      if (main) {
-        main.innerHTML = errorHtml;
-      } else {
-        document.body.insertAdjacentHTML('beforeend', errorHtml);
-      }
+      if (main) main.innerHTML = errorHtml;
+      else document.body.insertAdjacentHTML('beforeend', errorHtml);
     } else {
       document.body.innerHTML =
         '<p style="padding:2rem;font-family:sans-serif;">Training app failed to load. Ensure <code>js/wat-core.js</code> is present. Run <code>npm run build</code> in the project root, then open <code>public/index.html</code>.</p>';
@@ -49,7 +45,6 @@
 
   const {
     getTracks,
-    getTrackById,
     getModuleById,
     getModulesForTrack,
     filterModulesByLevel,
@@ -64,15 +59,27 @@
     serializeProgress,
     deserializeProgress,
     LEVELS,
+    searchCurriculum,
+    getStudyPaths,
+    getRecommendedModules,
+    filterFieldReference,
+    getFieldReferenceCategories,
+    getDeploymentChecklist,
+    getRemediationQueue,
   } = WAT;
 
   let progress = loadProgress();
   let currentView = 'catalog';
   let currentModuleId = null;
   let activeLevelFilter = 'all';
+  let activeStudyPathId = '';
+  let activeFieldRefCategory = 'all';
+  let fieldRefQuery = '';
+  let studyPathSelectInitialized = false;
 
   const els = {
     viewCatalog: document.getElementById('view-catalog'),
+    viewFieldref: document.getElementById('view-fieldref'),
     viewModule: document.getElementById('view-module'),
     viewProgress: document.getElementById('view-progress'),
     trackGrid: document.getElementById('track-grid'),
@@ -82,13 +89,16 @@
     filterBar: document.getElementById('level-filter'),
     moduleContent: document.getElementById('module-content'),
     progressDetail: document.getElementById('progress-detail'),
+    fieldrefContent: document.getElementById('fieldref-content'),
+    curriculumSearch: document.getElementById('curriculum-search'),
+    studyPathSelect: document.getElementById('study-path-select'),
+    searchResults: document.getElementById('search-results'),
     navButtons: document.querySelectorAll('[data-nav]'),
   };
 
   function loadProgress() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return deserializeProgress(raw);
+      return deserializeProgress(localStorage.getItem(STORAGE_KEY));
     } catch {
       return createEmptyProgress();
     }
@@ -101,6 +111,7 @@
   function showView(view) {
     currentView = view;
     els.viewCatalog.classList.toggle('view-hidden', view !== 'catalog');
+    els.viewFieldref.classList.toggle('view-hidden', view !== 'fieldref');
     els.viewModule.classList.toggle('view-hidden', view !== 'module');
     els.viewProgress.classList.toggle('view-hidden', view !== 'progress');
 
@@ -109,11 +120,20 @@
     });
 
     if (view === 'catalog') renderCatalog();
+    if (view === 'fieldref') renderFieldReference();
     if (view === 'progress') renderProgressView();
   }
 
   function levelClass(level) {
     return 'level-' + level.toLowerCase();
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   function renderOverview() {
@@ -123,9 +143,68 @@
     els.totalModules.textContent = String(overall.totalModules);
   }
 
+  function initStudyPathSelect() {
+    if (!els.studyPathSelect || studyPathSelectInitialized) return;
+    for (const path of getStudyPaths()) {
+      const opt = document.createElement('option');
+      opt.value = path.id;
+      opt.textContent = path.name;
+      els.studyPathSelect.appendChild(opt);
+    }
+    els.studyPathSelect.addEventListener('change', () => {
+      activeStudyPathId = els.studyPathSelect.value;
+      renderCatalog();
+    });
+    studyPathSelectInitialized = true;
+  }
+
+  function getPathModuleIds() {
+    if (!activeStudyPathId) return null;
+    const mods = getRecommendedModules(activeStudyPathId);
+    return new Set(mods.map((m) => m.id));
+  }
+
+  function renderSearchResults(query) {
+    if (!els.searchResults) return;
+    const q = (query || '').trim();
+    if (!q) {
+      els.searchResults.classList.add('view-hidden');
+      els.searchResults.innerHTML = '';
+      return;
+    }
+
+    const hits = searchCurriculum(q, { limit: 12 });
+    if (!hits.length) {
+      els.searchResults.classList.remove('view-hidden');
+      els.searchResults.innerHTML = '<p>No matches for <strong>' + escapeHtml(q) + '</strong>.</p>';
+      return;
+    }
+
+    els.searchResults.classList.remove('view-hidden');
+    els.searchResults.innerHTML = hits
+      .map(
+        (hit) => `
+      <div class="search-hit">
+        <button type="button" data-open-module="${hit.moduleId}">
+          ${escapeHtml(hit.moduleTitle)} <span class="level-badge ${levelClass(hit.level)}">${hit.level}</span>
+        </button>
+        <ul>${hit.matches.map((m) => `<li>${m.type}: ${escapeHtml(m.title)} — ${escapeHtml(m.excerpt)}…</li>`).join('')}</ul>
+      </div>
+    `
+      )
+      .join('');
+
+    els.searchResults.querySelectorAll('[data-open-module]').forEach((btn) => {
+      btn.addEventListener('click', () => openModule(btn.dataset.openModule));
+    });
+  }
+
   function renderCatalog() {
     renderOverview();
+    initStudyPathSelect();
     renderFilters();
+
+    const pathIds = getPathModuleIds();
     const tracks = getTracks();
     els.trackGrid.innerHTML = '';
 
@@ -135,6 +214,9 @@
 
       if (activeLevelFilter !== 'all') {
         modules = modules.filter((m) => m.level === activeLevelFilter);
+      }
+      if (pathIds) {
+        modules = modules.filter((m) => pathIds.has(m.id));
       }
 
       if (modules.length === 0) continue;
@@ -154,7 +236,6 @@
       `;
 
       const list = card.querySelector('.module-list');
-
       for (const mod of modules) {
         const mp = getModuleProgress(progress, mod.id);
         const li = document.createElement('li');
@@ -201,6 +282,68 @@
       btn.addEventListener('click', () => {
         activeLevelFilter = btn.dataset.level;
         renderCatalog();
+      });
+    });
+  }
+
+  function renderFieldReference() {
+    const entries = filterFieldReference({ category: activeFieldRefCategory, query: fieldRefQuery });
+    const categories = getFieldReferenceCategories();
+    const checklist = getDeploymentChecklist();
+
+    els.fieldrefContent.innerHTML = `
+      <div class="hero-card">
+        <h2>Field Quick Reference</h2>
+        <p>Deployment specs, taxa frequency bands, and QA checklists for field season — aligned with Academy training themes.</p>
+        <label class="search-field" for="fieldref-search">
+          <span class="sr-only">Search field reference</span>
+          <input type="search" id="fieldref-search" placeholder="Filter reference (bat, Nyquist, metadata)…" value="${escapeHtml(fieldRefQuery)}" />
+        </label>
+        <div class="fieldref-filters" id="fieldref-filters">
+          <button type="button" data-cat="all" class="${activeFieldRefCategory === 'all' ? 'active' : ''}">All</button>
+          ${categories
+            .map(
+              (c) =>
+                `<button type="button" data-cat="${c}" class="${activeFieldRefCategory === c ? 'active' : ''}">${escapeHtml(c)}</button>`
+            )
+            .join('')}
+        </div>
+      </div>
+      <div class="fieldref-panel">
+        <section>
+          <h3>Reference Cards (${entries.length})</h3>
+          ${entries
+            .map(
+              (e) => `
+            <article class="ref-card">
+              <h4>${escapeHtml(e.title)}</h4>
+              <p>${escapeHtml(e.summary)}</p>
+              <p><small>${escapeHtml(e.detail)}</small></p>
+              <p class="ref-tags">${e.tags.map((t) => '#' + escapeHtml(t)).join(' ')}</p>
+            </article>
+          `
+            )
+            .join('')}
+        </section>
+        <section>
+          <h3>Pre-Deployment Checklist</h3>
+          <ul class="deployment-checklist">
+            ${checklist.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+          </ul>
+        </section>
+      </div>
+    `;
+
+    const searchInput = document.getElementById('fieldref-search');
+    searchInput.addEventListener('input', () => {
+      fieldRefQuery = searchInput.value;
+      renderFieldReference();
+    });
+
+    els.fieldrefContent.querySelectorAll('#fieldref-filters button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeFieldRefCategory = btn.dataset.cat;
+        renderFieldReference();
       });
     });
   }
@@ -272,11 +415,6 @@
           </form>
           <div id="quiz-feedback" class="feedback-panel" role="status" aria-live="polite"></div>
         </section>
-        <div class="academy-note">
-          <strong>Wildlife Acoustics Academy</strong> — This companion app supports self-paced study aligned with
-          <a href="https://training.wildlifeacoustics.com/" target="_blank" rel="noopener">training.wildlifeacoustics.com</a>
-          courses. Earn official certificates and companion materials by enrolling in the live Academy LMS.
-        </div>
       </article>
     `;
 
@@ -290,8 +428,7 @@
       });
     });
 
-    const form = document.getElementById('quiz-form');
-    form.addEventListener('submit', (e) => {
+    document.getElementById('quiz-form').addEventListener('submit', (e) => {
       e.preventDefault();
       submitQuiz(mod);
     });
@@ -324,11 +461,10 @@
       `
         )
         .join('')}
+      ${result.passed ? '' : '<p><em>Missed items were added to your remediation queue on My Progress.</em></p>'}
     `;
 
-    if (panel.scrollIntoView) {
-      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+    if (panel.scrollIntoView) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     renderOverview();
   }
 
@@ -339,6 +475,31 @@
 
   function renderProgressView() {
     const overall = getOverallProgress(progress);
+    const remediation = getRemediationQueue(progress);
+
+    const remediationHtml =
+      remediation.length > 0
+        ? `
+      <section class="remediation-queue">
+        <h3>Review Missed Knowledge-Check Items (${remediation.length})</h3>
+        <p>Study rationales before retaking a module quiz.</p>
+        ${remediation
+          .map(
+            (item) => `
+          <article class="remediation-item">
+            <strong>${escapeHtml(item.moduleTitle)}</strong>
+            <p>${escapeHtml(item.prompt)}</p>
+            <p><small>Correct: ${escapeHtml(item.correctAnswer)}</small></p>
+            <p>${escapeHtml(item.rationale)}</p>
+            <button type="button" class="btn btn-secondary" data-review-module="${item.moduleId}">Open module</button>
+          </article>
+        `
+          )
+          .join('')}
+      </section>
+    `
+        : '<p class="remediation-queue"><em>No missed items in your remediation queue.</em></p>';
+
     els.progressDetail.innerHTML = `
       <div class="hero-card">
         <h2>Your Learning Progress</h2>
@@ -358,6 +519,7 @@
           </div>
         </div>
       </div>
+      ${remediationHtml}
       ${overall.tracks
         .map(
           (t) => `
@@ -397,8 +559,8 @@
       <button type="button" class="btn btn-secondary" id="reset-progress">Reset All Progress</button>
     `;
 
-    els.progressDetail.querySelectorAll('[data-open-module]').forEach((el) => {
-      el.addEventListener('click', () => openModule(el.dataset.openModule));
+    els.progressDetail.querySelectorAll('[data-open-module], [data-review-module]').forEach((el) => {
+      el.addEventListener('click', () => openModule(el.dataset.openModule || el.dataset.reviewModule));
     });
 
     document.getElementById('reset-progress').addEventListener('click', () => {
@@ -411,12 +573,8 @@
     });
   }
 
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  if (els.curriculumSearch) {
+    els.curriculumSearch.addEventListener('input', () => renderSearchResults(els.curriculumSearch.value));
   }
 
   els.navButtons.forEach((btn) => {

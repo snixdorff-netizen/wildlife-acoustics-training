@@ -42,6 +42,9 @@ function run(cmd, args, logFile) {
 console.log('SCRATCH:', scratch);
 console.log('test files:', testFiles.length, testFiles.join(', '));
 
+run('node', [path.join(root, 'scripts', 'emit-deliverable-manifest.js')], 'deliverable-manifest.log');
+run('node', [path.join(root, 'scripts', 'capture-baseline-only.js')], 'baseline-capture.log');
+
 const buildOut = execSync('node scripts/build.js', { cwd: root, encoding: 'utf8' });
 console.log(buildOut);
 
@@ -71,6 +74,9 @@ if (testRun.status !== 0) {
 
 const { getCurriculumAudit } = require(path.join(root, 'src', 'curriculum'));
 fs.writeFileSync(path.join(scratch, 'curriculum-audit.txt'), getCurriculumAudit());
+
+run('node', [path.join(root, 'scripts', 'capture-metrics.js')]);
+run('node', [path.join(root, 'scripts', 'emit-final-claims.js')], 'final-claims.log');
 
 run('node', [path.join(root, 'tests', 'interaction.harness.js')], 'interaction.log');
 

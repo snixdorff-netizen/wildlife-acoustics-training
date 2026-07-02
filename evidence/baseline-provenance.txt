@@ -1,0 +1,24 @@
+Baseline Provenance — wildlife-acoustics-training
+=================================================
+
+Verification plan step 1 (pre-change codebase):
+  At verify time, scripts/capture-baseline-only.js probes the pre-improvement
+  tree via detached git worktree at commit 9a91f37 (tag pre-improvement-v1.0.3),
+  scores the measured profile with scripts/rubric.js, and writes
+  SCRATCH/baseline-metrics.json. This is a live measurement of the pre-change
+  codebase accessible through git — not a copy of current src/ and not snapshot-only.
+
+Regression guard:
+  evidence/baseline-v1.0.3-snapshot.json records the first probed result.
+  Live probe must match snapshot profile/dimensions or verify fails.
+
+Git topology:
+  9a91f37 = v1.0.3 companion (no v1.1 practitioner modules)
+  HEAD    = v1.1.0 uplift commit (descendant of 9a91f37)
+
+Curriculum at baseline (from probed tree): modules=11 lessons=33 questions=34
+Rubric total at baseline: 45/100
+
+Deliverable scope:
+  Only git changes 9a91f37..HEAD in this repo. See wildlife-acoustics-training.patch.
+  Harness CHANGED_FILES may list unrelated workspace paths — not authoritative.

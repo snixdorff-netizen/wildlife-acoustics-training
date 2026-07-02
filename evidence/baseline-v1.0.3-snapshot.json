@@ -1,0 +1,35 @@
+{
+  "sourceCommit": "9a91f37",
+  "sourceCommitFull": "9a91f3756c61a32ef1eacb2330ed7aacdc5b8403",
+  "sourceTag": "pre-improvement-v1.0.3",
+  "capturedAt": "2026-07-02T03:12:37.669Z",
+  "captureMethod": "git-worktree-probe",
+  "provenance": "Measured from v1.0.3 tree at 9a91f37 before v1.1 modules; frozen at capture; verify copies dimensions without re-probe",
+  "repoTopology": "sole-committed-ancestor-pre-v1.1",
+  "profile": {
+    "version": "1.0.3",
+    "fieldRefEntryCount": 0,
+    "hasDeploymentChecklist": false,
+    "hasTaxaFrequencyBands": false,
+    "hasRemediationQueue": false,
+    "hasCurriculumSearch": false,
+    "hasStudyPaths": false,
+    "studyPathCount": 0,
+    "hasFieldSeasonMobileCss": false,
+    "hasFileProtocolViable": true,
+    "hasResponsiveBaseLayout": true,
+    "hasImmediateQuizFeedback": true,
+    "hasCatalogAndLevelFilter": true,
+    "moduleCount": 11,
+    "lessonCount": 33,
+    "questionCount": 34
+  },
+  "dimensions": {
+    "fieldReferenceUtility": 0,
+    "remediationReview": 8,
+    "discoverabilityNavigation": 6,
+    "fieldSeasonUsability": 14,
+    "curriculumDepthCoverage": 17
+  },
+  "total": 45
+}

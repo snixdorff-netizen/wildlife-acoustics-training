@@ -46,6 +46,7 @@ function recordKnowledgeCheckResult(progress, moduleId, result) {
 
   const existing = next.knowledgeChecks[moduleId];
   const bestScore = existing ? Math.max(existing.bestScore, result.score) : result.score;
+  const lastMissedQuestionIds = (result.results || []).filter((r) => !r.correct).map((r) => r.questionId);
 
   next.knowledgeChecks[moduleId] = {
     passed: existing?.passed || result.passed,
@@ -53,6 +54,7 @@ function recordKnowledgeCheckResult(progress, moduleId, result) {
     lastScore: result.score,
     lastAttempt: new Date().toISOString(),
     attempts: (existing?.attempts ?? 0) + 1,
+    lastMissedQuestionIds: result.passed ? [] : lastMissedQuestionIds,
   };
 
   return next;

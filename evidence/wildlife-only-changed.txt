@@ -1,0 +1,13 @@
+Wildlife Acoustics Training — scope ledger
+==========================================
+project root: /Users/stuartnixdorff/Developer/wildlife-acoustics-training
+timestamp: 2026-07-02T04:09:34.355Z
+note: independent of harness workspace CHANGED_FILES; lists only this git repo
+
+changed paths (git status --porcelain):
+(clean working tree)
+
+entry count: 0
+out-of-scope violations: 0
+
+all changed paths are within wildlife-acoustics-training repo scope

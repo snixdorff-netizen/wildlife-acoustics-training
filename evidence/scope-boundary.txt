@@ -1,0 +1,27 @@
+Wildlife Acoustics Training — Deliverable Scope Boundary
+=========================================================
+
+AUTHORITATIVE DELIVERABLE (this goal):
+  Repository: Developer/wildlife-acoustics-training/
+  Git range: 9a91f37 (pre-improvement-v1.0.3) .. HEAD
+  Evidence: SCRATCH/wildlife-acoustics-training.patch
+            SCRATCH/wildlife-only-changed.txt (repo git porcelain)
+            evidence/harness-scope-audit.txt
+
+OUT OF SCOPE (per plan non-goals — not modified as part of deliverable):
+  - Developer/swarm/*
+  - Developer/chum-jaws-bridge/*
+  - Music/* (.db and library files)
+  - .expo/* caches
+
+HARNESS CHANGED_FILES / session patch:
+  The Grok Build harness may aggregate workspace-wide paths into CHANGED_FILES
+  and CHANGES_FILE, including OS/app noise (Music databases, unrelated repos).
+  Those entries are NOT authoritative for this goal's deliverable.
+
+  scripts/harness-scope-audit.js classifies harness entries when available.
+  scripts/export-deliverable-patch.js exports wildlife-only git diff.
+
+BASELINE:
+  Pre-change codebase = git tree at 9a91f37, live-probed each verify run.
+  Frozen snapshot = regression oracle only.

@@ -147,6 +147,18 @@ try {
   await page2.waitForSelector('#quiz-feedback.visible');
   await page2.screenshot({ path: join(scratch, 'quiz-feedback.png'), fullPage: true });
 
+  const page3 = await context.newPage();
+  await page3.goto(fileUrl, { waitUntil: 'load' });
+  await page3.evaluate(() => localStorage.clear());
+  await page3.reload({ waitUntil: 'load' });
+  await page3.waitForSelector('#curriculum-search');
+  await page3.locator('#curriculum-search').fill('bat');
+  await page3.waitForSelector('#search-results:not(.view-hidden)');
+  await page3.locator('nav.top-nav [data-nav="fieldref"]').click();
+  await page3.waitForSelector('#fieldref-content .ref-card');
+  await page3.screenshot({ path: join(scratch, 'improvement-feature.png'), fullPage: true });
+  log.push('practitioner-feature: search + field reference panel exercised');
+
   await browser.close();
   log.push('', 'browser-e2e: PASSED (missing-wat-core + 2 file:// runs)');
 } catch (err) {

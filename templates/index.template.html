@@ -37,6 +37,7 @@
         </p>
         <nav class="top-nav" aria-label="Main navigation">
           <button type="button" data-nav="catalog" class="active">Course Catalog</button>
+          <button type="button" data-nav="fieldref">Field Reference</button>
           <button type="button" data-nav="progress">My Progress</button>
         </nav>
       </div>
@@ -63,8 +64,23 @@
           </div>
         </div>
 
+        <div class="field-season-toolbar" id="catalog-toolbar">
+          <label class="search-field" for="curriculum-search">
+            <span class="sr-only">Search curriculum</span>
+            <input type="search" id="curriculum-search" placeholder="Search modules & lessons (bat, SM5, Nyquist)…" autocomplete="off" />
+          </label>
+          <label class="path-field" for="study-path-select">
+            <span>Study path</span>
+            <select id="study-path-select"><option value="">All modules</option></select>
+          </label>
+        </div>
+        <div id="search-results" class="search-results view-hidden" aria-live="polite"></div>
         <div class="filter-bar" id="level-filter" aria-label="Filter by level"></div>
         <div class="track-grid" id="track-grid"></div>
+      </section>
+
+      <section id="view-fieldref" class="view-hidden">
+        <div id="fieldref-content"></div>
       </section>
 
       <section id="view-module" class="view-hidden">

@@ -1,0 +1,19 @@
+Harness scope audit — wildlife-acoustics-training goal
+====================================================
+timestamp: 2026-07-02T04:09:34.371Z
+wildlife repo: /Users/stuartnixdorff/Developer/wildlife-acoustics-training
+
+DELIVERABLE SCOPE (authoritative):
+  git diff pre-improvement-v1.0.3..HEAD in this repo only
+  see wildlife-acoustics-training.patch + scope-ledger (git porcelain)
+
+HARNESS CHANGED_FILES (workspace-level, may be polluted):
+  source: (not provided to verify — audit skipped)
+  entries: 0
+  in-scope wildlife paths: 0
+  out-of-scope entries: 0
+
+interpretation:
+  Out-of-scope harness entries do not negate wildlife deliverable evidence.
+  This goal does not modify swarm/, chum-jaws-bridge/, or Music/ per plan non-goals.
+  Verifier should use wildlife-acoustics-training.patch + in-repo git status as scope truth.
