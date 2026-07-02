@@ -96,7 +96,16 @@ header.site-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.brand-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .brand h1 {
@@ -161,6 +170,53 @@ main {
   padding: 1.5rem;
   margin-bottom: 2rem;
   box-shadow: var(--shadow);
+}
+
+.hero-card--banner {
+  padding: 0;
+  overflow: hidden;
+}
+
+.hero-card__media {
+  position: relative;
+  line-height: 0;
+  background: var(--wa-forest);
+}
+
+.hero-card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(8, 28, 21, 0.55) 100%);
+  pointer-events: none;
+}
+
+.hero-banner-img {
+  width: 100%;
+  height: auto;
+  max-height: 280px;
+  object-fit: cover;
+  object-position: center 35%;
+  display: block;
+}
+
+.hero-card__body {
+  padding: 1.5rem;
+}
+
+.hero-card--split .hero-card__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.hero-card__aside img {
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--wa-border);
+  display: block;
 }
 
 .hero-card h2 {
@@ -682,6 +738,14 @@ footer a {
 @media (max-width: 600px) {
   header.site-header {
     padding: 1rem;
+  }
+
+  .hero-banner-img {
+    max-height: 180px;
+  }
+
+  .hero-card--split .hero-card__body {
+    grid-template-columns: 1fr;
   }
 
   main {

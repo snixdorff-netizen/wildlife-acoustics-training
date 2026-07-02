@@ -292,21 +292,28 @@
     const checklist = getDeploymentChecklist();
 
     els.fieldrefContent.innerHTML = `
-      <div class="hero-card">
-        <h2>Field Quick Reference</h2>
-        <p>Deployment specs, taxa frequency bands, and QA checklists for field season — aligned with Academy training themes.</p>
-        <label class="search-field" for="fieldref-search">
-          <span class="sr-only">Search field reference</span>
-          <input type="search" id="fieldref-search" placeholder="Filter reference (bat, Nyquist, metadata)…" value="${escapeHtml(fieldRefQuery)}" />
-        </label>
-        <div class="fieldref-filters" id="fieldref-filters">
-          <button type="button" data-cat="all" class="${activeFieldRefCategory === 'all' ? 'active' : ''}">All</button>
-          ${categories
-            .map(
-              (c) =>
-                `<button type="button" data-cat="${c}" class="${activeFieldRefCategory === c ? 'active' : ''}">${escapeHtml(c)}</button>`
-            )
-            .join('')}
+      <div class="hero-card hero-card--split">
+        <div class="hero-card__body">
+          <div>
+            <h2>Field Quick Reference</h2>
+            <p>Deployment specs, taxa frequency bands, and QA checklists for field season — aligned with Academy training themes.</p>
+            <label class="search-field" for="fieldref-search">
+              <span class="sr-only">Search field reference</span>
+              <input type="search" id="fieldref-search" placeholder="Filter reference (bat, Nyquist, metadata)…" value="${escapeHtml(fieldRefQuery)}" />
+            </label>
+            <div class="fieldref-filters" id="fieldref-filters">
+              <button type="button" data-cat="all" class="${activeFieldRefCategory === 'all' ? 'active' : ''}">All</button>
+              ${categories
+                .map(
+                  (c) =>
+                    `<button type="button" data-cat="${c}" class="${activeFieldRefCategory === c ? 'active' : ''}">${escapeHtml(c)}</button>`
+                )
+                .join('')}
+            </div>
+          </div>
+          <div class="hero-card__aside" aria-hidden="true">
+            <img src="assets/wa-field-reference.jpg" alt="" width="480" height="320" decoding="async" />
+          </div>
         </div>
       </div>
       <div class="fieldref-panel">

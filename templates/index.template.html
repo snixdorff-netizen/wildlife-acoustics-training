@@ -24,7 +24,9 @@
     <header class="site-header">
       <div class="header-inner">
         <div class="brand">
-          <div class="brand-icon" aria-hidden="true">🎙</div>
+          <div class="brand-icon" aria-hidden="true">
+            <img src="assets/wa-logo.jpg" alt="" width="48" height="48" decoding="async" />
+          </div>
           <div>
             <h1>Wildlife Acoustics</h1>
             <p class="subtitle">Academy Training Companion</p>
@@ -45,14 +47,25 @@
 
     <main id="app-main">
       <section id="view-catalog">
-        <div class="hero-card">
-          <h2>On-Demand Learning for Wildlife Professionals</h2>
-          <p>
-            We know field season can be busy and unpredictable. Use this companion to study Academy-aligned modules at
-            your own pace — complete lessons, pass knowledge checks, and track your progress toward certificate-ready
-            skills.
-          </p>
-          <div class="progress-overview">
+        <div class="hero-card hero-card--banner">
+          <div class="hero-card__media">
+            <img
+              src="assets/wa-hero-banner.jpg"
+              alt=""
+              class="hero-banner-img"
+              width="1100"
+              height="400"
+              decoding="async"
+            />
+          </div>
+          <div class="hero-card__body">
+            <h2>On-Demand Learning for Wildlife Professionals</h2>
+            <p>
+              We know field season can be busy and unpredictable. Use this companion to study Academy-aligned modules at
+              your own pace — complete lessons, pass knowledge checks, and track your progress toward certificate-ready
+              skills.
+            </p>
+            <div class="progress-overview">
             <div class="progress-stat">
               <div class="value" id="overall-percent">0%</div>
               <div class="label">Overall Progress</div>
@@ -61,6 +74,7 @@
               <div class="value"><span id="completed-modules">0</span>/<span id="total-modules">0</span></div>
               <div class="label">Modules Complete</div>
             </div>
+          </div>
           </div>
         </div>
 

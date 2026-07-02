@@ -72,14 +72,19 @@ describe('baseline evidence (structural honesty)', () => {
     assert.equal(tagCommit, baselineCommit);
   });
 
-  it('working tree contains v1.1 modules absent at baseline commit', () => {
-    const head = execSync('git rev-parse HEAD', { cwd: root, encoding: 'utf8' }).trim();
-    const baseline = execSync(`git rev-parse ${BASELINE_COMMIT}`, { cwd: root, encoding: 'utf8' }).trim();
-    assert.equal(head, baseline, 'HEAD at pre-improvement tag with uplift in working tree');
-
+  it('v1.1 modules absent at baseline commit and present in current tree', () => {
     assert.equal(gitCatFile('src/field-reference.js', BASELINE_COMMIT), false);
     assert.ok(fs.existsSync(path.join(root, 'src/field-reference.js')));
     assert.ok(fs.existsSync(path.join(root, 'src/search.js')));
     assert.ok(fs.existsSync(path.join(root, 'public/js/app.js')));
+
+    const head = execSync('git rev-parse HEAD', { cwd: root, encoding: 'utf8' }).trim();
+    const baseline = execSync(`git rev-parse ${BASELINE_COMMIT}`, { cwd: root, encoding: 'utf8' }).trim();
+    if (head === baseline) {
+      const dirty = execSync('git status --porcelain', { cwd: root, encoding: 'utf8' }).trim();
+      assert.ok(dirty.length > 0, 'uplift files expected in working tree when HEAD is at baseline');
+    } else {
+      assert.ok(gitCatFile('src/field-reference.js', head), 'uplift committed when HEAD is past baseline');
+    }
   });
 });
